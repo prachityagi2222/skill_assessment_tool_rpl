@@ -8,9 +8,9 @@ export const INITIAL_ASSESSORS = [
     centerName: "Government ITI Alambagh, Lucknow",
     experienceYears: 14,
     assessmentsCompleted: 142,
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    avatar: "./assets/placeholder-evidence.svg",
     phone: "+91 94150 11223",
-    email: "vikram.sharma@nsqf-assessor.gov.in"
+    email: "vikram.sharma@example.com"
   },
   {
     id: "ASSESSOR-102",
@@ -20,9 +20,9 @@ export const INITIAL_ASSESSORS = [
     centerName: "Apex Skill Development Center, Kolkata",
     experienceYears: 11,
     assessmentsCompleted: 98,
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    avatar: "./assets/placeholder-evidence.svg",
     phone: "+91 98300 44556",
-    email: "ananya.b@nsqf-assessor.gov.in"
+    email: "ananya.b@example.com"
   },
   {
     id: "ASSESSOR-103",
@@ -32,9 +32,9 @@ export const INITIAL_ASSESSORS = [
     centerName: "Regional Skill Center, Ludhiana",
     experienceYears: 18,
     assessmentsCompleted: 215,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    avatar: "./assets/placeholder-evidence.svg",
     phone: "+91 98140 77889",
-    email: "gurpreet.singh@nsqf-assessor.gov.in"
+    email: "gurpreet.singh@example.com"
   }
 ];
 
@@ -61,7 +61,7 @@ export const INITIAL_CANDIDATES = [
         title: "Three-Phase Distribution Board & RCCB Wiring",
         type: "photo",
         date: "2026-10-02",
-        url: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["RCCB 40A / 30mA", "MCB 16A Type-C", "PVC Trunking", "Ferruling sleeves"],
           confidence: 94,
@@ -75,7 +75,7 @@ export const INITIAL_CANDIDATES = [
         title: "Multimeter Voltage & Continuity Inspection",
         type: "photo",
         date: "2026-10-04",
-        url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["Digital Multimeter DT-830D", "Insulated Probe Leads", "Wire Stripper 6\""],
           confidence: 91,
@@ -159,7 +159,7 @@ export const INITIAL_CANDIDATES = [
         title: "Sterile Glove Donning & Patient Transfer Setup",
         type: "photo",
         date: "2026-10-08",
-        url: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["Sterile Surgical Gloves", "Wheelchair Brake Locks", "Patient Transfer Belt"],
           confidence: 92,
@@ -221,7 +221,7 @@ export const INITIAL_CANDIDATES = [
         title: "Exhaust Manifold Flange TIG Joint",
         type: "photo",
         date: "2026-09-28",
-        url: "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["TIG Torch WP-17", "Argon Flowmeter", "Stainless Steel 304 filler wire"],
           confidence: 88,
@@ -289,7 +289,7 @@ export const INITIAL_CANDIDATES = [
         title: "Rooftop PV Rail Clamping & Angle Alignment",
         type: "photo",
         date: "2026-10-11",
-        url: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["Aluminum Mid-Clamp", "Torque Wrench", "Magnetic Inclinometer"],
           confidence: 93,
@@ -335,7 +335,7 @@ export const INITIAL_CANDIDATES = [
         title: "Assessment Plan & MCQ Blueprint Document",
         type: "document",
         date: "2026-10-11",
-        url: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         description: "Comprehensive blueprint aligning 146 performance criteria to 40% summative theory and 60% practical demonstration.",
         aiAnalysis: {
           detectedTools: ["Assessment Blueprint Table", "NOS Mapping Matrix", "MCQ Item Specifications"],
@@ -350,7 +350,7 @@ export const INITIAL_CANDIDATES = [
         title: "Practical Observation Checklist & Viva Rubric",
         type: "photo",
         date: "2026-10-12",
-        url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         description: "Hands-on assessment tool with situational oral viva prompts and safety rubric.",
         aiAnalysis: {
           detectedTools: ["Rubric Matrix", "Viva Question Guide"],
@@ -401,7 +401,7 @@ export const INITIAL_CANDIDATES = [
         title: "Industrial Single Needle Lockstitch Seaming & Tensioning",
         type: "photo",
         date: "2026-10-09",
-        url: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["Industrial Lockstitch Machine DDL-8700", "Thread Snips", "Measuring Tape 60\""],
           confidence: 93,
@@ -415,7 +415,7 @@ export const INITIAL_CANDIDATES = [
         title: "Collar Attachment & Sleeve Placket Finishing",
         type: "photo",
         date: "2026-10-10",
-        url: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=600&q=80",
+        url: "./assets/placeholder-evidence.svg",
         aiAnalysis: {
           detectedTools: ["Steam Iron Box", "Tailor's Chalk", "Fabric Shears 10\""],
           confidence: 91,

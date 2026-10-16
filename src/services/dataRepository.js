@@ -21,6 +21,19 @@ class DataRepository {
     this.isLoaded = false;
   }
 
+  async fetchJson(url) {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Failed to load ${url}: HTTP ${res.status} ${res.statusText}`);
+    }
+    return res.json();
+  }
+
+  baseUrl() {
+    // Vite build: './' (subpath-safe); Vite dev: '/'; plain Node tests: '/' fallback.
+    return (import.meta?.env?.BASE_URL ?? '/');
+  }
+
   loadCorrections() {
     try {
       const data = localStorage.getItem(CORRECTIONS_STORAGE_KEY);
@@ -72,16 +85,16 @@ class DataRepository {
         erRes,
         issuesRes
       ] = await Promise.all([
-        fetch(`${import.meta.env.BASE_URL}data/qualifications_index.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/qualification_sources.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/curriculum_versions.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/modules.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/competencies.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/performance_criteria.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/assessment_methods.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/assessment_rubrics.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/evidence_requirements.json`).then(r => r.json()),
-        fetch(`${import.meta.env.BASE_URL}data/extraction_review_issues.json`).then(r => r.json())
+        this.fetchJson(`${this.baseUrl()}data/qualifications_index.json`),
+        this.fetchJson(`${this.baseUrl()}data/qualification_sources.json`),
+        this.fetchJson(`${this.baseUrl()}data/curriculum_versions.json`),
+        this.fetchJson(`${this.baseUrl()}data/modules.json`),
+        this.fetchJson(`${this.baseUrl()}data/competencies.json`),
+        this.fetchJson(`${this.baseUrl()}data/performance_criteria.json`),
+        this.fetchJson(`${this.baseUrl()}data/assessment_methods.json`),
+        this.fetchJson(`${this.baseUrl()}data/assessment_rubrics.json`),
+        this.fetchJson(`${this.baseUrl()}data/evidence_requirements.json`),
+        this.fetchJson(`${this.baseUrl()}data/extraction_review_issues.json`)
       ]);
 
       this.qualificationsIndex = indexRes;
@@ -99,7 +112,7 @@ class DataRepository {
 
       this.isLoaded = true;
     } catch (err) {
-      console.error('Error loading extracted data repository:', err);
+      console.error('Error loading extracted data repository (see failed data/*.json URL above):', err);
     }
   }
 
@@ -200,10 +213,10 @@ class DataRepository {
     // Check full cache or fetch full qualifications.json if needed
     if (!this.fullQualificationsMap.has(id)) {
       try {
-        const fullRes = await fetch(`${import.meta.env.BASE_URL}data/qualifications.json`).then(r => r.json());
+        const fullRes = await this.fetchJson(`${this.baseUrl()}data/qualifications.json`);
         fullRes.forEach(item => this.fullQualificationsMap.set(item.id, item));
       } catch (e) {
-        console.warn('Could not load full qualifications catalogue, using index record', e);
+        console.warn('Could not load full qualifications catalogue (data/qualifications.json), using index record', e);
       }
     }
 
@@ -303,7 +316,7 @@ class DataRepository {
 
   addReviewIssue(issue) {
     const newIssue = {
-      id: `ISSUE-${Date.now()}`,
+      id: `ISSUE-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`,
       created_at: new Date().toISOString(),
       status: 'pending_manual_review',
       ...issue

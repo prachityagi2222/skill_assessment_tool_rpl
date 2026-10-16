@@ -76,7 +76,7 @@ Conventional RPL faces severe bottlenecks:
 | **Accessibility & Voice** | Native Web Speech API | Vernacular speech-to-text and text-to-speech without external API keys |
 | **Icons & UI Symbols** | Lucide React | High-contrast, semantic SVG iconography |
 | **Linter & Code Quality** | Oxlint v1.81 | High-speed Rust-based JavaScript/React linting |
-| **Data Extraction Pipeline**| Python 3 (openpyxl, pypdf) | Deterministic PDF/Excel extraction into verified JSON schemas |
+| **Data Extraction Pipeline**| Python 3 (openpyxl, pypdfium2) | Deterministic PDF/Excel extraction into verified JSON schemas |
 
 ---
 
@@ -97,7 +97,7 @@ rpl/
 │   │   ├── qualifications_index.json     # Lightweight catalog index (2,815 records)
 │   │   ├── qualifications.json           # Full catalog metadata
 │   │   ├── performance_criteria.json     # 146 criteria from Assessment Guide
-│   │   ├── competencies.json             # 136 outcomes (ES + Assessment Guide)
+│   │   ├── competencies.json             # 136 outcomes (all ES curricula: 24+35+39+38; 0 AG)
 │   │   ├── curriculum_versions.json      # 4 distinct ES duration documents
 │   │   ├── modules.json                  # Modules mapped to distinct curricula
 │   │   ├── assessment_methods.json       # 3 assessment methods (Theory, Practical, Viva)
@@ -154,9 +154,9 @@ rpl/
 ## ⚙️ 5. Installation & Run Commands
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or later (Tested on Node v24.2.0)
+- **Node.js**: v18.0.0 or later (Tested on Node v24.2.0; Node 20/22 recommended — see `engines` in package.json)
 - **npm**: v9.0.0 or later
-- **Python** (Optional, only needed to re-extract raw source files): Python 3.9+ with `openpyxl` and `pypdf`
+- **Python** (Optional, only needed to re-extract raw source files): Python 3.9+ with `openpyxl` and `pypdfium2`
 
 ### 1. Install Dependencies
 ```bash
@@ -198,7 +198,7 @@ The application data is deterministically extracted from the official source fil
 
 ```bash
 # Optional: install Python parsing libraries if not present
-pip install openpyxl pypdf
+pip install openpyxl pypdfium2
 
 # Execute extraction pipeline
 python extract_pipeline.py
@@ -214,15 +214,15 @@ python extract_pipeline.py
   6. `Assessment_Guide.pdf.pdf`
 - **Qualifications Imported**: **2,815** (2,814 from NQR Spreadsheet + 1 official Qualification Pack from Assessment Guide: `2022/OAFM/MEPSC/06022`).
 - **Curricula Duration Records Imported**: **4** (30h, 60h, 90h, 120h kept strictly partitioned).
-- **Competencies Extracted**: **136** (126 from Employability Skills + 10 major outcomes from Assessment Guide).
-- **Performance Criteria Extracted**: **146** (Pages 16–26 of Assessment Guide, e.g., `PC10`).
+- **Competencies Extracted**: **136** (all from Employability Skills curricula: 24×30H + 35×60H + 39×90H + 38×120H; 0 from Assessment Guide).
+- **Performance Criteria Extracted**: **146** rows, **146** unique ids (Pages 16–26 of Assessment Guide, e.g., `PC10`; 4 duplicate ids de-duplicated with `-B` suffix).
 - **Assessment Methods Extracted**: **3** (Written Theory 40%, Practical Demonstration 60%, Viva Voce).
 - **Official Rubrics Extracted**: **1** (70% aggregate pass threshold, Pages 6 & 27).
 - **Records Missing Crucial Metadata**: 0 missing codes, 0 missing NSQF levels, 0 missing awarding bodies.
-- **Records Flagged for Manual Coordinator Review**: **4**
+- **Records Flagged for Manual Coordinator Review**: **3**
   - Duplicate code in Excel rows 538 & 546 (`QG-04-ES-00913-2023-V1-SCGJ`)
   - Omission discrepancy: `2022/OAFM/MEPSC/06022` present in Assessment Guide but absent in NQR Excel summary
-  - Typographical artifact in Row 754
+  - Typographical artifact in Row 397
 
 ---
 

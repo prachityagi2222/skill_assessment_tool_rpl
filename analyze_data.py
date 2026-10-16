@@ -3,8 +3,10 @@ import openpyxl
 import pypdfium2 as pdfium
 import json
 import re
+from pathlib import Path
 
-DATA_DIR = r"c:\Users\samta\OneDrive\Desktop\rpl\data"
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = str(BASE_DIR / "data")
 
 # Check NQR Excel for specific codes and statistics
 excel_path = os.path.join(DATA_DIR, "NQR_Qualifications_Summary.xlsx.xlsx")

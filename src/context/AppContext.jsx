@@ -54,7 +54,7 @@ export const AppProvider = ({ children }) => {
   // Helper to add audit log
   const logAudit = (action, actor, candidateId, candidateName, details, aiInvolvement) => {
     const newLog = {
-      id: `AUDIT-${Date.now().toString().slice(-4)}`,
+      id: `AUDIT-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().slice(0, 8).toUpperCase() : Date.now().toString().slice(-4))}`,
       timestamp: new Date().toISOString(),
       action,
       actor,
@@ -62,7 +62,7 @@ export const AppProvider = ({ children }) => {
       candidateName,
       details,
       aiInvolvement: aiInvolvement || "Human-in-the-loop verification recorded.",
-      hash: `0x${Math.random().toString(16).substring(2, 10)}...sha256`
+      hash: `0x${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 8) : Math.random().toString(16).substring(2, 10))}...sha256`
     };
     setAuditLogs(prev => [newLog, ...prev]);
   };
@@ -138,7 +138,7 @@ export const AppProvider = ({ children }) => {
     if (!cand) return;
 
     const isCompetent = assessmentData.verdict === 'COMPETENT';
-    const certId = isCompetent ? `RPL-2026-${cand.qualificationId.split('-')[1] || 'SKL'}-${Math.floor(10000 + Math.random() * 90000)}` : null;
+    const certId = isCompetent ? `RPL-2026-${cand.qualificationId.split('-')[1] || 'SKL'}-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().slice(0, 8).toUpperCase().replace(/-/g, '') : Math.floor(10000 + Math.random() * 90000))}` : null;
 
     const updatedAssessmentRecord = {
       evaluatedAt: new Date().toISOString(),
@@ -149,7 +149,7 @@ export const AppProvider = ({ children }) => {
       finalWeightedScore: assessmentData.finalWeightedScore,
       verdict: assessmentData.verdict,
       assessorRemarks: assessmentData.assessorRemarks,
-      digitalSignature: `${activeAssessor.name.toUpperCase().replace(/\s+/g, '_')}_NSDC_SIG_${Date.now()}`,
+      digitalSignature: `${activeAssessor.name.toUpperCase().replace(/\s+/g, '_')}_NSDC_SIG_${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : Date.now())}`,
       certificateId: certId,
       certificateIssueDate: isCompetent ? new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null
     };
@@ -206,13 +206,13 @@ export const AppProvider = ({ children }) => {
     if (!cand || !cand.assessmentRecord) return;
 
     const isCompetent = cand.assessmentRecord.verdict === 'COMPETENT';
-    const certId = cand.assessmentRecord.certificateId || (isCompetent ? `RPL-2026-${(cand.qualificationId || 'SKL').split('-')[1] || 'SKL'}-${Math.floor(10000 + Math.random() * 90000)}` : null);
+    const certId = cand.assessmentRecord.certificateId || (isCompetent ? `RPL-2026-${(cand.qualificationId || 'SKL').split('-')[1] || 'SKL'}-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().slice(0, 8).toUpperCase().replace(/-/g, '') : Math.floor(10000 + Math.random() * 90000))}` : null);
 
     const updatedRecord = {
       ...cand.assessmentRecord,
       status: 'AUTHORISED',
       authorisedAt: new Date().toISOString(),
-      authorisedBy: 'Dr. Priya Nair (Scheme Coordinator)',
+      authorisedBy: ((import.meta?.env?.DEV ?? true) ? 'Dr. Priya Nair (Scheme Coordinator)' : 'Scheme Coordinator'),
       coordinatorRemarks: notes || 'Assessment audited and officially authorized by Scheme Coordinator. Certified according to NSQF RPL standards.',
       certificateId: certId,
       certificateIssueDate: isCompetent ? new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null
@@ -255,7 +255,7 @@ export const AppProvider = ({ children }) => {
       status: 'DRAFT',
       assignedAssessorId: null,
       evidenceList: [],
-      aadhaarMasked: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000),
+      aadhaarMasked: 'XXXX-XXXX-' + (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().replace(/\D/g, '').slice(0, 4).padEnd(4, '0') : Math.floor(1000 + Math.random() * 9000)),
       isDemoRecord: true,
       hasConsent: false,
       ...candidateData

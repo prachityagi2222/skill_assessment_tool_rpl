@@ -169,7 +169,7 @@
     "verification_status": "unverified"
   },
   {
-    "id": "AG-PC-P16-PC10",
+    "id": "AG-PC-P16-PC10-B",
     "qualification_code": "2022/OAFM/MEPSC/06022",
     "pc_code": "PC10",
     "description": "check draft assessment tools against \r evaluation criteria and amend as necessary - -",
@@ -1157,7 +1157,7 @@
     "verification_status": "unverified"
   },
   {
-    "id": "AG-PC-P22-PC9",
+    "id": "AG-PC-P22-PC9-B",
     "qualification_code": "2022/OAFM/MEPSC/06022",
     "pc_code": "PC9",
     "description": "select and implement development \r opportunities to support continuous learning and",
@@ -1170,7 +1170,7 @@
     "verification_status": "unverified"
   },
   {
-    "id": "AG-PC-P22-PC10",
+    "id": "AG-PC-P22-PC10-B",
     "qualification_code": "2022/OAFM/MEPSC/06022",
     "pc_code": "PC10",
     "description": "research developments and trends impacting \r on professional practice and integrate information",
@@ -1183,7 +1183,7 @@
     "verification_status": "unverified"
   },
   {
-    "id": "AG-PC-P22-PC11",
+    "id": "AG-PC-P22-PC11-B",
     "qualification_code": "2022/OAFM/MEPSC/06022",
     "pc_code": "PC11",
     "description": "seek feedback on performance from \r others and incorporate it to improve",

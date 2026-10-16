@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Smartphone, Info, X, ShieldAlert, CheckCircle, Apple, Monitor } from 'lucide-react';
+import { Download, Smartphone, Info, X, ShieldAlert, CheckCircle, Monitor } from 'lucide-react';
 import { Button } from './Button';
 
 export const PwaInstallPrompt = () => {
@@ -30,6 +30,15 @@ export const PwaInstallPrompt = () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
+
+  useEffect(() => {
+    if (!showGuideModal) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowGuideModal(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [showGuideModal]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -100,7 +109,7 @@ export const PwaInstallPrompt = () => {
       {/* PWA & Offline Guidance Modal */}
       {showGuideModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+          <div role="dialog" aria-modal="true" aria-label="Offline Installation and Capabilities" className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="bg-teal-900 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -114,6 +123,7 @@ export const PwaInstallPrompt = () => {
               </div>
               <button
                 onClick={() => setShowGuideModal(false)}
+                aria-label="Close offline installation guide"
                 className="text-teal-300 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
@@ -159,7 +169,7 @@ export const PwaInstallPrompt = () => {
 
                 <div className="border border-slate-200 rounded-xl p-2.5 space-y-1">
                   <div className="flex items-center gap-1.5 font-bold text-slate-800 text-[11px]">
-                    <Apple className="w-3.5 h-3.5 text-slate-700" />
+                    <Smartphone className="w-3.5 h-3.5 text-slate-700" />
                     <span>iOS Safari (iPhone / iPad)</span>
                   </div>
                   <p className="text-[11px] text-slate-600">

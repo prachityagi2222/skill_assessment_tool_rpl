@@ -107,7 +107,7 @@ export class QualificationMatchingService {
             score += 15;
             matchedCompetencies.push({
               code: pc.pc_code,
-              description: pc.description.slice(0, 100) + '...',
+              description: (pc.description || '').slice(0, 100) + '...',
               matchedOn: pcMatches
             });
             break;
@@ -116,13 +116,15 @@ export class QualificationMatchingService {
       }
 
       // Also check general Employability Skills competencies
+      // NOTE: full-catalog scan + slice(0,50) is arbitrary (biased to import order).
+      // TODO: proper ranking pass — pre-index/tokenize PCs once, paginate, require competency signal.
       for (const comp of allCompetencies.slice(0, 50)) {
         const compTokens = tokenize(comp.description);
         const compMatches = uniqueWorkerTokens.filter(t => compTokens.includes(t));
         if (compMatches.length >= 2) {
           matchedCompetencies.push({
-            code: `Outcome #${comp.outcome_number}`,
-            description: comp.description.slice(0, 80) + '...',
+            code: `[placeholder] Outcome #${comp.outcome_number}`,
+            description: (comp.description || '').slice(0, 80) + '...',
             matchedOn: compMatches
           });
           score += 5;

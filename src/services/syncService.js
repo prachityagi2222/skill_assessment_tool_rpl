@@ -92,7 +92,7 @@ class SyncService {
   // Enqueue an idempotent sync operation
   async enqueueOperation({ entityType, entityId, action, payload, operationId = null }) {
     const database = getDb();
-    const opId = operationId || `OP-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const opId = operationId || `OP-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.floor(Math.random() * 1e6)}`)}`;
     const now = new Date().toISOString();
 
     const opRecord = {
@@ -322,7 +322,7 @@ class SyncService {
   // Conflict recording helper
   async recordConflict(op, remoteRecord, reason) {
     const database = getDb();
-    const conflictId = `CONF-${Date.now()}`;
+    const conflictId = `CONF-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`;
     const record = {
       id: conflictId,
       entityType: op.entityType,

@@ -1,10 +1,12 @@
 import React from 'react';
-import * as Icons from 'lucide-react';
+import { CheckCircle2, Clock, Sparkles, AlertTriangle, UserCheck, ShieldCheck, FileText, Circle } from 'lucide-react';
 import { getStatusMeta } from '../../utils/helpers';
+
+const ICON_MAP = { CheckCircle2, Clock, Sparkles, AlertTriangle, UserCheck, ShieldCheck, FileText, Circle };
 
 export const StatusBadge = ({ status }) => {
   const meta = getStatusMeta(status);
-  const IconComponent = Icons[meta.icon] || Icons.Circle;
+  const IconComponent = ICON_MAP[meta.icon] || Circle;
 
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${meta.badgeClass}`}>

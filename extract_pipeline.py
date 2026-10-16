@@ -3,9 +3,11 @@ import openpyxl
 import pypdfium2 as pdfium
 import json
 import re
+from pathlib import Path
 
-DATA_DIR = r"c:\Users\samta\OneDrive\Desktop\rpl\data"
-OUTPUT_DIR = r"c:\Users\samta\OneDrive\Desktop\rpl\src\data\extracted"
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = str(BASE_DIR / "data")
+OUTPUT_DIR = str(BASE_DIR / "src" / "data" / "extracted")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=== STEP 1: EXTRACT NQR QUALIFICATIONS EXCEL ===")
@@ -740,7 +742,7 @@ with open(os.path.join(OUTPUT_DIR, "extraction_report.json"), "w", encoding="utf
     json.dump(report, f, indent=2, ensure_ascii=False)
 
 # Copy all generated files to public/data directory
-PUBLIC_DIR = r"c:\Users\samta\OneDrive\Desktop\rpl\public\data"
+PUBLIC_DIR = str(BASE_DIR / "public" / "data")
 os.makedirs(PUBLIC_DIR, exist_ok=True)
 import shutil
 for fname in os.listdir(OUTPUT_DIR):

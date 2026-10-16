@@ -10,10 +10,10 @@ createRoot(document.getElementById('root')).render(
 )
 
 // Register Service Worker for offline PWA functionality
-if ('serviceWorker' in navigator && typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register(import.meta.env.BASE_URL + 'sw.js')
+      .register((import.meta?.env?.BASE_URL ?? './') + 'sw.js')
       .then((registration) => {
         console.log('[PWA] Service Worker registered successfully with scope:', registration.scope);
       })

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export const Modal = ({
@@ -9,16 +9,42 @@ export const Modal = ({
   children,
   maxWidth = 'max-w-md'
 }) => {
+  const titleId = useId();
+  const dialogRef = useRef(null);
+  const triggerRef = useRef(null);
+
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      triggerRef.current = document.activeElement;
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'hidden';
+      }
+      // Focus first interactive element for basic focus trap entry.
+      const t = setTimeout(() => {
+        dialogRef.current?.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')?.focus?.();
+      }, 0);
+      const onKey = (e) => {
+        if (e.key === 'Escape') onClose?.();
+      };
+      document.addEventListener('keydown', onKey);
+      return () => {
+        clearTimeout(t);
+        document.removeEventListener('keydown', onKey);
+        document.body.style.overflow = '';
+        // Return focus to the trigger on close.
+        triggerRef.current?.focus?.();
+      };
     } else {
-      document.body.style.overflow = '';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
     }
     return () => {
-      document.body.style.overflow = '';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -30,12 +56,16 @@ export const Modal = ({
         aria-hidden="true"
       />
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className={`relative bg-white w-full ${maxWidth} rounded-t-3xl sm:rounded-2xl shadow-xl max-h-[90vh] flex flex-col z-10 border border-slate-200 overflow-hidden animate-in slide-in-from-bottom duration-300`}
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50">
           <div>
-            <h3 className="font-bold text-slate-900 text-base sm:text-lg leading-snug">{title}</h3>
+            <h3 id={titleId} className="font-bold text-slate-900 text-base sm:text-lg leading-snug">{title}</h3>
             {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
           <button

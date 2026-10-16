@@ -1,7 +1,9 @@
 import Dexie from 'dexie';
 
 // Polyfill IndexedDB in Node.js automated test environments if native indexedDB is missing
-if (typeof window === 'undefined' && typeof indexedDB === 'undefined') {
+// DEV-only: fake-indexeddb is a devDependency and must never land in the production bundle;
+// top-level await also breaks old WebViews, so gate the polyfill behind DEV (default true in Node tests).
+if ((import.meta?.env?.DEV ?? true) && typeof window === 'undefined' && typeof indexedDB === 'undefined') {
   try {
     await import('fake-indexeddb/auto');
   } catch {}
@@ -59,6 +61,16 @@ export const validateEvidenceFile = (fileOrBlob, fileName = '') => {
   const name = fileName || fileOrBlob.name || 'unnamed_upload';
   const ext = name.split('.').pop().toLowerCase();
 
+  // 0. Zero-byte check
+  if (!size || size <= 0) {
+    return {
+      valid: false,
+      error: 'File is empty (0 bytes). Please choose a valid photo, document, or audio file.',
+      sizeBytes: size,
+      name
+    };
+  }
+
   // 1. File size check
   if (size > MAX_EVIDENCE_FILE_SIZE_BYTES) {
     return {
@@ -97,7 +109,7 @@ export const offlineDbService = {
 
     const record = {
       id: draftId,
-      candidateId: candidateId || 'CAND-2026-001',
+      candidateId: candidateId || ((import.meta?.env?.DEV ?? true) ? 'CAND-2026-001' : null),
       formData: draftData.formData || {},
       declaredSkills: draftData.declaredSkills || [],
       evidenceList: draftData.evidenceList || [],
@@ -117,14 +129,12 @@ export const offlineDbService = {
       }
     }
 
-    // Mirror to localStorage for instant synchronous hydration and legacy compat
+    // NOTE: No localStorage mirror of full payload (quota blowup risk).
+    // IndexedDB is the source of truth; keep only a tiny index for legacy hydration.
     try {
-      localStorage.setItem('kaushalsetu_worker_application_draft_v1', JSON.stringify({
+      localStorage.setItem('kaushalsetu_worker_application_draft_index_v1', JSON.stringify({
         id: record.id,
         candidateId: record.candidateId,
-        formData: record.formData,
-        declaredSkills: record.declaredSkills,
-        evidenceList: record.evidenceList,
         updatedAt: record.updatedAt,
         version: record.version,
         syncStatus: record.syncStatus
@@ -191,15 +201,19 @@ export const offlineDbService = {
       }
     }
 
-    // Mirror to localStorage under existing assessor evaluations key
+    // NOTE: No localStorage mirror of full dossier (quota blowup risk).
+    // Keep only a tiny per-candidate index; full record lives in IndexedDB.
     try {
-      const existing = localStorage.getItem('kaushalsetu_assessor_evaluations_v2');
+      const existing = localStorage.getItem('kaushalsetu_assessor_evaluations_index_v1');
       const parsed = existing ? JSON.parse(existing) : {};
       parsed[candidateId] = {
-        ...parsed[candidateId],
-        ...record
+        candidateId,
+        qualificationId: record.qualificationId,
+        updatedAt: record.updatedAt,
+        version: record.version,
+        syncStatus: record.syncStatus
       };
-      localStorage.setItem('kaushalsetu_assessor_evaluations_v2', JSON.stringify(parsed));
+      localStorage.setItem('kaushalsetu_assessor_evaluations_index_v1', JSON.stringify(parsed));
     } catch {}
 
     return record;

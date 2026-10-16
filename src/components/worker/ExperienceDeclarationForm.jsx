@@ -102,7 +102,7 @@ export const ExperienceDeclarationForm = ({
     } else {
       // Add new
       const newSkill = {
-        id: `skill-${Date.now()}`,
+        id: `skill-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`,
         title: skillTitle.trim(),
         tools: toolsUsed.trim() || (language === 'hi' ? 'हस्त औजार' : 'Hand tools'),
         description: taskDescription.trim(),

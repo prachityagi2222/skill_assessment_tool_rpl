@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, User, UserPlus, ShieldCheck, LayoutDashboard, Sparkles, CheckCircle2, ChevronRight, Mic, Camera, FileCheck2, ArrowRight } from 'lucide-react';
+import { Award, User, UserPlus, ShieldCheck, LayoutDashboard, Sparkles, CheckCircle2, ChevronRight, Mic, Camera, FileCheck, ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageSelector } from '../components/common/LanguageSelector';
@@ -75,7 +75,7 @@ export const WelcomePage = () => {
             <span>Photo / Video Evidence</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-700 bg-slate-50 p-2 rounded-xl">
-            <FileCheck2 className="w-4 h-4 text-teal-600" />
+            <FileCheck className="w-4 h-4 text-teal-600" />
             <span>NOS Rubric Checklists</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-700 bg-slate-50 p-2 rounded-xl">

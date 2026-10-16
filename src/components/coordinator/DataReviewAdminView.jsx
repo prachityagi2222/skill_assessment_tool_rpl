@@ -191,9 +191,12 @@ export const DataReviewAdminView = ({ initialStatusFilter = 'ALL' }) => {
   };
 
   // Resolve Issue
+  // Placeholder: window.prompt() blocked headless tests and is inaccessible.
+  // TODO: replace with inline Modal collecting resolution notes (see Edit/Correction modal pattern).
   const handleResolveIssue = (issueId) => {
-    const note = prompt('Enter resolution verification notes:', 'Cross-referenced and verified against authoritative NCVET qualification document.');
-    if (note === null) return;
+    const ok = window.confirm('Mark this audit discrepancy as resolved with the default verification note?');
+    if (!ok) return;
+    const note = 'Cross-referenced and verified against authoritative NCVET qualification document.';
     dataRepository.updateReviewIssueStatus(issueId, 'resolved', note);
     setReviewIssues(dataRepository.getExtractionReviewIssues());
     setQualifications(dataRepository.getQualifications());
@@ -524,6 +527,7 @@ export const DataReviewAdminView = ({ initialStatusFilter = 'ALL' }) => {
                       <button
                         onClick={() => handleOpenRecordDetail(r)}
                         title="Inspect full source traceability and performance criteria"
+                        aria-label={`Inspect ${r.code || r.title}`}
                         className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -532,6 +536,7 @@ export const DataReviewAdminView = ({ initialStatusFilter = 'ALL' }) => {
                       <button
                         onClick={() => handleOpenFlag(r)}
                         title="Flag for coordinator audit"
+                        aria-label={`Flag ${r.code || r.title} for review`}
                         className="p-1.5 rounded-lg border border-slate-200 hover:border-amber-300 hover:bg-amber-50 text-slate-500 hover:text-amber-700 transition-colors"
                       >
                         <Flag className="w-3.5 h-3.5" />
@@ -540,6 +545,7 @@ export const DataReviewAdminView = ({ initialStatusFilter = 'ALL' }) => {
                       <button
                         onClick={() => handleOpenEdit(r)}
                         title="Record a correction"
+                        aria-label={`Record correction for ${r.code || r.title}`}
                         className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors flex items-center gap-1 font-bold text-[11px] px-2"
                       >
                         <Edit3 className="w-3.5 h-3.5" />

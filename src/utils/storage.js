@@ -37,13 +37,16 @@ export const storage = {
       const data = safeGet(STORAGE_KEYS.CANDIDATES);
       if (!data) return INITIAL_CANDIDATES;
       const parsed = JSON.parse(data);
-      // Ensure any newly added demo candidates (like CAND-2026-005) are present
-      const existingIds = new Set(parsed.map(c => c.id));
-      const missing = INITIAL_CANDIDATES.filter(c => !existingIds.has(c.id));
-      if (missing.length > 0) {
-        const merged = [...parsed, ...missing];
-        safeSet(STORAGE_KEYS.CANDIDATES, JSON.stringify(merged));
-        return merged;
+      // DEV-only auto-seed: merge newly added demo candidates (e.g. CAND-2026-005).
+      // In production (PROD=true) never auto-inject demo records.
+      if ((import.meta?.env?.DEV ?? true)) {
+        const existingIds = new Set(parsed.map(c => c.id));
+        const missing = INITIAL_CANDIDATES.filter(c => !existingIds.has(c.id));
+        if (missing.length > 0) {
+          const merged = [...parsed, ...missing];
+          safeSet(STORAGE_KEYS.CANDIDATES, JSON.stringify(merged));
+          return merged;
+        }
       }
       return parsed;
     } catch {
@@ -107,9 +110,9 @@ export const storage = {
 
   getActiveCandidateId: () => {
     try {
-      return safeGet(STORAGE_KEYS.ACTIVE_CANDIDATE_ID) || 'CAND-2026-001';
+      return safeGet(STORAGE_KEYS.ACTIVE_CANDIDATE_ID) || ((import.meta?.env?.DEV ?? true) ? 'CAND-2026-001' : null);
     } catch {
-      return 'CAND-2026-001';
+      return ((import.meta?.env?.DEV ?? true) ? 'CAND-2026-001' : null);
     }
   },
   setActiveCandidateId: (id) => {
@@ -122,9 +125,9 @@ export const storage = {
 
   getActiveAssessorId: () => {
     try {
-      return safeGet(STORAGE_KEYS.ACTIVE_ASSESSOR_ID) || 'ASSESSOR-101';
+      return safeGet(STORAGE_KEYS.ACTIVE_ASSESSOR_ID) || ((import.meta?.env?.DEV ?? true) ? 'ASSESSOR-101' : null);
     } catch {
-      return 'ASSESSOR-101';
+      return ((import.meta?.env?.DEV ?? true) ? 'ASSESSOR-101' : null);
     }
   },
   setActiveAssessorId: (id) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, FileText, Upload, Trash2, CheckCircle2, Clock, AlertTriangle, ShieldAlert, Sparkles, ArrowLeft, ArrowRight, Save, Plus, Image as ImageIcon, Volume2, HardDrive, Info } from 'lucide-react';
 import { Button } from '../common/Button';
 import { validateEvidenceFile } from '../../services/offlineDb';
@@ -28,7 +28,7 @@ export const EvidenceUploadSection = ({
       name: 'Distribution_Panel_Wiring.jpg',
       size: '2.4 MB',
       type: 'Photo of Completed Work',
-      url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       description: 'Three-phase 40A RCCB and 16A MCB sub-distribution panel with color-coded copper wiring.',
       defaultSkill: 'Three-Phase MCB Panel Dressing'
     },
@@ -37,7 +37,7 @@ export const EvidenceUploadSection = ({
       name: 'Earthing_Resistance_Multimeter_Test.jpg',
       size: '1.8 MB',
       type: 'Photo of Completed Work',
-      url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       description: 'Digital multimeter measurement of loop continuity and earth pit reading (2.8 ohms).',
       defaultSkill: 'Earthing Pit Resistance Testing'
     },
@@ -46,7 +46,7 @@ export const EvidenceUploadSection = ({
       name: 'TIG_Weld_Manifold_Joint.jpg',
       size: '3.1 MB',
       type: 'Photo of Completed Work',
-      url: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       description: 'Stainless steel exhaust flange weld showing root penetration and argon gas shielding.',
       defaultSkill: 'Automotive TIG Butt & Fillet Welding'
     },
@@ -74,6 +74,9 @@ export const EvidenceUploadSection = ({
       return;
     }
 
+    if (customFile?.url && customFile.url.startsWith('blob:')) {
+      URL.revokeObjectURL(customFile.url);
+    }
     const preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
     setCustomFile({
       name: file.name,
@@ -87,6 +90,15 @@ export const EvidenceUploadSection = ({
       setDescription(`Field upload artifact: ${file.name}`);
     }
   };
+
+  // Revoke any blob preview on unmount to avoid object-URL leaks.
+  useEffect(() => {
+    return () => {
+      if (customFile?.url && customFile.url.startsWith('blob:')) {
+        try { URL.revokeObjectURL(customFile.url); } catch {}
+      }
+    };
+  }, [customFile]);
 
   const handleSelectPreset = (p) => {
     setCustomFile(null);
@@ -112,13 +124,27 @@ export const EvidenceUploadSection = ({
       fileUrl = customFile.url;
     } else {
       const preset = SAMPLE_PRESETS.find(p => p.id === selectedFilePreset) || SAMPLE_PRESETS[0];
+      // Route presets through the same validator (parse '2.4 MB'/'410 KB' to bytes).
+      const sizeMatch = String(preset.size || '').match(/([\d.]+)\s*(MB|KB)/i);
+      const presetBytes = sizeMatch
+        ? Math.round(parseFloat(sizeMatch[1]) * (sizeMatch[2].toUpperCase() === 'MB' ? 1024 * 1024 : 1024))
+        : 0;
+      const presetCheck = validateEvidenceFile(
+        { size: presetBytes, name: preset.name, type: preset.url ? 'image/jpeg' : 'application/pdf' },
+        preset.name
+      );
+      if (!presetCheck.valid) {
+        setFormError(presetCheck.error);
+        return;
+      }
       fileName = preset.name;
       fileSize = preset.size;
       fileUrl = preset.url;
     }
 
+    const isLocalArtifact = !fileUrl || fileUrl.startsWith('blob:') || fileUrl.startsWith('data:') || fileUrl.startsWith('./');
     const newEvidence = {
-      id: `ev-${Date.now()}`,
+      id: `ev-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`,
       fileName,
       fileSize,
       type: evidenceType,
@@ -127,11 +153,14 @@ export const EvidenceUploadSection = ({
       url: fileUrl,
       uploadDate: new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
       verificationStatus: 'Pending Review', // Never claim authentic on upload!
-      offlineStored: true,
+      offlineStored: isLocalArtifact,
       aiDetectedSignals: ['Tool usage visual match', 'Work area safety check queued']
     };
 
     onUpdateEvidence([newEvidence, ...evidenceList]);
+    if (customFile?.url && customFile.url.startsWith('blob:')) {
+      try { URL.revokeObjectURL(customFile.url); } catch {}
+    }
     setShowAddForm(false);
     setCustomFile(null);
     setDescription('');
@@ -139,6 +168,10 @@ export const EvidenceUploadSection = ({
   };
 
   const handleDeleteEvidence = (id) => {
+    const target = evidenceList.find(e => e.id === id);
+    if (target?.url && target.url.startsWith('blob:')) {
+      try { URL.revokeObjectURL(target.url); } catch {}
+    }
     onUpdateEvidence(evidenceList.filter(e => e.id !== id));
   };
 

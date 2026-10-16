@@ -4,6 +4,12 @@
 const CACHE_NAME = 'kaushalsetu-shell-v1';
 
 // Static application shell assets and extracted qualification catalogs required offline
+// - qualifications_index.json (1.8MB): precached — search works offline.
+// - Small reference JSONs below: precached — coordinator review + rubrics work offline.
+// - qualifications.json (4.7MB, lazy-loaded via getQualificationById): NOT precached to avoid
+//   install bloat; covered by runtime stale-while-revalidate below.
+// - extraction_review_issues.json + extraction_report.json: precached — audit queue visible offline.
+// - Hashed Vite assets (assets/*.js|css): cannot be listed statically; covered by runtime SWR below.
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -19,7 +25,9 @@ const PRECACHE_ASSETS = [
   './data/competencies.json',
   './data/performance_criteria.json',
   './data/qualification_sources.json',
-  './data/modules.json'
+  './data/modules.json',
+  './data/extraction_review_issues.json',
+  './data/extraction_report.json'
 ];
 
 // Install Event: Pre-cache App Shell & Core Reference Catalogs
@@ -71,6 +79,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Strategy 1: HTML Navigation requests (App Shell) -> Network First with Cache Fallback
+  // Keys normalized to scope-relative URLs so subpath deploys (/repo/) resolve correctly.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -82,19 +91,28 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // If network is offline, return cached app shell
-          return caches.match('./index.html').then((cached) => {
-            return cached || caches.match('/');
+          // If network is offline, return cached app shell.
+          // Use registration scope so '/'-fallback does not escape to domain root on subpaths.
+          const scopeIndex = new URL('index.html', self.registration.scope);
+          return caches.match(scopeIndex, { ignoreSearch: true }).then((cached) => {
+            if (cached) return cached;
+            return caches.match(request, { ignoreSearch: true }).then((byRequest) => {
+              if (byRequest) return byRequest;
+              return new Response('<!doctype html><title>Offline</title><p>KaushalSetu is offline. Reconnect to reload.</p>', {
+                headers: { 'Content-Type': 'text/html' }
+              });
+            });
           });
         })
     );
     return;
   }
 
-  // Strategy 2: Static assets (JS, CSS, SVGs, Fonts, JSON reference data)
-  // Stale-While-Revalidate: Return fast from cache, fetch update in background
+  // Strategy 2: Static assets (JS, CSS, SVGs, Fonts, JSON reference data) + runtime lazy JSONs
+  // (e.g. qualifications.json 4.7MB lazy-loaded): Stale-While-Revalidate.
+  // Returns cached copy immediately, revalidates in background; never resolves undefined.
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
+    caches.match(request, { ignoreSearch: true }).then((cachedResponse) => {
       const fetchPromise = fetch(request)
         .then((networkResponse) => {
           if (
@@ -110,8 +128,17 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Network failed, if no cache available, nothing to return
-          return cachedResponse;
+          // Network failed: return cache, else explicit offline fallback (never undefined).
+          if (cachedResponse) return cachedResponse;
+          if (request.destination === 'document' || request.mode === 'navigate') {
+            return caches.match(new URL('index.html', self.registration.scope), { ignoreSearch: true }).then((shell) => {
+              return shell || new Response('Offline', { status: 503, statusText: 'Offline' });
+            });
+          }
+          if (request.url.includes('/data/')) {
+            return new Response('[]', { headers: { 'Content-Type': 'application/json' } });
+          }
+          return new Response('Offline', { status: 503, statusText: 'Offline' });
         });
 
       return cachedResponse || fetchPromise;

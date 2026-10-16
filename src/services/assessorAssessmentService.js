@@ -75,6 +75,13 @@ class AssessorAssessmentService {
 
   saveToStorage(candidateId = null) {
     try {
+      // Cap revisionHistory to last 50 entries per evaluation to bound localStorage growth.
+      for (const cid of Object.keys(this.evaluations)) {
+        const rec = this.evaluations[cid];
+        if (rec && Array.isArray(rec.revisionHistory) && rec.revisionHistory.length > 50) {
+          rec.revisionHistory = rec.revisionHistory.slice(0, 50);
+        }
+      }
       localStorage.setItem(ASSESSOR_EVALUATIONS_STORAGE_KEY, JSON.stringify(this.evaluations));
     } catch (e) {
       console.error('Failed to save assessor evaluations to localStorage', e);
@@ -114,7 +121,7 @@ class AssessorAssessmentService {
         }
       } catch {}
 
-      const initialQualId = candidate?.confirmedQualification?.id || candidate?.qualificationId || 'NQR-2022/OAFM/MEPSC/06022';
+      const initialQualId = candidate?.confirmedQualification?.id || candidate?.qualificationId || ((import.meta?.env?.DEV ?? true) ? 'NQR-2022/OAFM/MEPSC/06022' : null);
       const qualRecord = await dataRepository.getQualificationById(initialQualId) || {
         id: initialQualId,
         title: candidate?.currentRoleName || 'General Vocational Assessment',
@@ -303,6 +310,7 @@ class AssessorAssessmentService {
       action: 'CRITERION_EVALUATED',
       summary: `Criterion ${criterionId} set to "${outcome || updatedCriterion.outcome}". Linked ${updatedCriterion.linkedEvidenceIds.length} evidence items.`
     });
+    evalRecord.revisionHistory = evalRecord.revisionHistory.slice(0, 50);
 
     if (evalRecord.status === 'assigned') {
       evalRecord.status = 'in_progress';
@@ -336,6 +344,7 @@ class AssessorAssessmentService {
       action: 'EVIDENCE_REVIEWED',
       summary: `Evidence "${evidenceId}" marked as "${status}". Reason: "${reason || 'None provided'}"`
     });
+    evalRecord.revisionHistory = evalRecord.revisionHistory.slice(0, 50);
 
     this.saveToStorage();
     return evalRecord.evidenceReviews[evidenceId];
@@ -360,6 +369,7 @@ class AssessorAssessmentService {
       action: 'QUALIFICATION_CONFIRMED',
       summary: `Qualification changed from "${prevTitle}" to "${qualification.title}" (${qualification.code}). Rationale: "${rationale}"`
     });
+    evalRecord.revisionHistory = evalRecord.revisionHistory.slice(0, 50);
 
     this.saveToStorage();
     return evalRecord;
@@ -381,6 +391,7 @@ class AssessorAssessmentService {
       action: 'DRAFT_SAVED',
       summary: 'Assessor draft summary and rationale saved.'
     });
+    evalRecord.revisionHistory = evalRecord.revisionHistory.slice(0, 50);
 
     this.saveToStorage();
     return evalRecord;
@@ -404,6 +415,7 @@ class AssessorAssessmentService {
       action: 'SUBMITTED_FOR_REVIEW',
       summary: `Assessment submitted for Authorised Review with recommendation "${recommendation}".`
     });
+    evalRecord.revisionHistory = evalRecord.revisionHistory.slice(0, 50);
 
     this.saveToStorage();
     return evalRecord;

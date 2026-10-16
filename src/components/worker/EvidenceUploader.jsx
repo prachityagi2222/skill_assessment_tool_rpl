@@ -8,28 +8,28 @@ export const EvidenceUploader = ({ isOpen, onClose }) => {
   const { activeCandidate, addEvidence } = useApp();
   const [title, setTitle] = useState('');
   const [selectedPreset, setSelectedPreset] = useState('photo1');
-  const [previewUrl, setPreviewUrl] = useState('https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80');
+  const [previewUrl, setPreviewUrl] = useState('./assets/placeholder-evidence.svg');
   const [isSimulatingAnalysis, setIsSimulatingAnalysis] = useState(false);
 
   const presets = [
     {
       id: 'photo1',
       name: 'Panel Board Wiring & Conduit',
-      url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       detected: ['Conduit saddle clips', 'Copper wire terminations', 'Distribution panel'],
       nos: 'ELE/N6002 (92% Alignment)'
     },
     {
       id: 'photo2',
       name: 'Earthing Electrode & Resistance Test',
-      url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       detected: ['Earth resistance tester', 'Electrode spikes', 'Insulated leads'],
       nos: 'ELE/N6003 (89% Alignment)'
     },
     {
       id: 'photo3',
       name: 'Rooftop Solar Rail Mount',
-      url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80',
+      url: './assets/placeholder-evidence.svg',
       detected: ['Aluminum rail clamp', 'Torque ratchet', 'Safety tether line'],
       nos: 'SGJ/N0102 (94% Alignment)'
     }
@@ -49,7 +49,7 @@ export const EvidenceUploader = ({ isOpen, onClose }) => {
 
     setTimeout(() => {
       const newEvidence = {
-        id: `ev-photo-${Date.now()}`,
+        id: `ev-photo-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`,
         title: title || presetData.name,
         type: 'photo',
         date: new Date().toISOString().split('T')[0],

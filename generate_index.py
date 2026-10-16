@@ -1,7 +1,9 @@
 import json
 import os
+from pathlib import Path
 
-OUTPUT_DIR = r"c:\Users\samta\OneDrive\Desktop\rpl\src\data\extracted"
+BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = str(BASE_DIR / "src" / "data" / "extracted")
 
 with open(os.path.join(OUTPUT_DIR, "qualifications.json"), "r", encoding="utf-8") as f:
     quals = json.load(f)
@@ -46,7 +48,7 @@ with open(os.path.join(OUTPUT_DIR, "qualifications_index.json"), "w", encoding="
     json.dump(search_index, f, ensure_ascii=False)
 
 # Copy to public
-with open(os.path.join(r"c:\Users\samta\OneDrive\Desktop\rpl\public\data\qualifications_index.json"), "w", encoding="utf-8") as f:
+with open(os.path.join(str(BASE_DIR / "public" / "data" / "qualifications_index.json")), "w", encoding="utf-8") as f:
     json.dump(search_index, f, ensure_ascii=False)
 
 print(f"Generated search index with {len(search_index)} items. Size: {os.path.getsize(os.path.join(OUTPUT_DIR, 'qualifications_index.json')) / 1024:.1f} KB")

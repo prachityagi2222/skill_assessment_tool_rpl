@@ -12,6 +12,22 @@ dist
 dist-ssr
 *.local
 
+# Data sources — large binaries, never commit
+data/*.pdf
+data/*.xlsx
+
+# Generated extraction output (single source is public/data/)
+src/data/extracted/
+
+# Raw extraction dumps
+*.raw.json
+assessment_guide_raw.json
+es_extracted_raw.json
+
+# Env files
+.env
+.env.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

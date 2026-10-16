@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ClipboardCheck, CheckSquare, ShieldCheck, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
+import { ClipboardCheck, SquareCheck, ShieldCheck, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
 import { QUALIFICATIONS } from '../../data/qualifications';
 import { calculateRubricScore } from '../../utils/helpers';
 import { ProgressBar } from '../common/ProgressBar';
@@ -64,7 +64,7 @@ export const StructuredRubric = ({
       <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
-            <CheckSquare className="w-4 h-4 text-sky-600" />
+            <SquareCheck className="w-4 h-4 text-sky-600" />
             Mandatory Practical Safety & Standard Checklist
           </h4>
           <span className="text-[11px] text-slate-400 font-semibold">

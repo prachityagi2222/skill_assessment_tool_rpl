@@ -56,13 +56,21 @@ export const VoiceWorkLogModal = ({ isOpen, onClose }) => {
     setIsRecording(false);
     setIsProcessing(true);
 
-    // Simulate speech-to-text and AI extraction
-    setTimeout(() => {
-      const selected = sampleTranscripts[sampleOption] || sampleTranscripts.electrical;
-      setTranscript(selected.native);
-      setTranslatedTranscript(selected.english);
+    // Demo only — not real transcription. Sample injection is DEV-gated so production
+    // never fabricates a transcript. Wire speechRecognitionService.js for real mic/ASR.
+    if ((import.meta?.env?.DEV ?? true)) {
+      // Simulate speech-to-text and AI extraction
+      setTimeout(() => {
+        const selected = sampleTranscripts[sampleOption] || sampleTranscripts.electrical;
+        setTranscript(selected.native);
+        setTranslatedTranscript(selected.english);
+        setIsProcessing(false);
+      }, 1200);
+    } else {
+      setTranscript('');
+      setTranslatedTranscript('');
       setIsProcessing(false);
-    }, 1200);
+    }
   };
 
   const handleSaveVoiceEvidence = () => {
@@ -70,7 +78,7 @@ export const VoiceWorkLogModal = ({ isOpen, onClose }) => {
     const selected = sampleTranscripts[sampleOption] || sampleTranscripts.electrical;
 
     const newEvidence = {
-      id: `ev-voice-${Date.now()}`,
+      id: `ev-voice-${(typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now())}`,
       title: `Voice Work Log (${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})`,
       type: 'audio',
       date: new Date().toISOString().split('T')[0],
@@ -97,6 +105,9 @@ export const VoiceWorkLogModal = ({ isOpen, onClose }) => {
       maxWidth="max-w-lg"
     >
       <div className="space-y-4">
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-[11px] text-amber-900 font-semibold">
+          Demo only — not real transcription. Samples are injected locally; no microphone audio is recorded.
+        </div>
         
         {/* Language & Trade Selection preset */}
         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">

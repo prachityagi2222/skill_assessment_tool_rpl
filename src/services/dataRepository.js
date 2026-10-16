@@ -72,16 +72,16 @@ class DataRepository {
         erRes,
         issuesRes
       ] = await Promise.all([
-        fetch('/data/qualifications_index.json').then(r => r.json()),
-        fetch('/data/qualification_sources.json').then(r => r.json()),
-        fetch('/data/curriculum_versions.json').then(r => r.json()),
-        fetch('/data/modules.json').then(r => r.json()),
-        fetch('/data/competencies.json').then(r => r.json()),
-        fetch('/data/performance_criteria.json').then(r => r.json()),
-        fetch('/data/assessment_methods.json').then(r => r.json()),
-        fetch('/data/assessment_rubrics.json').then(r => r.json()),
-        fetch('/data/evidence_requirements.json').then(r => r.json()),
-        fetch('/data/extraction_review_issues.json').then(r => r.json())
+        fetch(`${import.meta.env.BASE_URL}data/qualifications_index.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/qualification_sources.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/curriculum_versions.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/modules.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/competencies.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/performance_criteria.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/assessment_methods.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/assessment_rubrics.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/evidence_requirements.json`).then(r => r.json()),
+        fetch(`${import.meta.env.BASE_URL}data/extraction_review_issues.json`).then(r => r.json())
       ]);
 
       this.qualificationsIndex = indexRes;
@@ -200,7 +200,7 @@ class DataRepository {
     // Check full cache or fetch full qualifications.json if needed
     if (!this.fullQualificationsMap.has(id)) {
       try {
-        const fullRes = await fetch('/data/qualifications.json').then(r => r.json());
+        const fullRes = await fetch(`${import.meta.env.BASE_URL}data/qualifications.json`).then(r => r.json());
         fullRes.forEach(item => this.fullQualificationsMap.set(item.id, item));
       } catch (e) {
         console.warn('Could not load full qualifications catalogue, using index record', e);
